@@ -1,9 +1,11 @@
 from functools import reduce
 
+
 INPUT = 'input.txt'
+LIMIT = (12, 13, 14) # (R,G,B)
 
 
-def _parse_game(str):
+def _parse_result(str):
     """
     return: tuple of colour count (R, G, B)
     """
@@ -19,7 +21,20 @@ def _parse_game(str):
     return tuple(game_set)
 
 
-def _get_result(game):
+def _part1(game):
+    """
+    input: list of tuples, e.g. [(1,2,3), (1,3,4)]
+    return: True (valid), False (invalid)
+    """
+    for subset in game:
+        if subset[0] > LIMIT[0] or \
+           subset[1] > LIMIT[1] or \
+           subset[2] > LIMIT[2]:
+            return False
+    return True
+
+
+def _part2(game):
     """
     input: list of tuples, e.g. [(1,2,3), (1,3,4)]
     return: Power
@@ -32,28 +47,33 @@ def _get_result(game):
     return reduce(lambda p, x: p * x, mins)
 
 
-def check_game(game_str):
+def _parse_game(game_str):
     set_str = game_str.split('; ')
-    game = map(_parse_game, set_str)
-    return _get_result(game)
+    game = map(_parse_result, set_str)
+    return game
 
 
-def main():
+def part1():
     with open(INPUT, 'r') as file:
         sum = 0
         for line in file:
-            id, game = line.split(': ')
-            sum += check_game(game)
+            id_str, game_str = line.split(': ')
+            game = _parse_game(game_str)
+            if _part1(game):
+                sum += int(id_str.split()[1])
         print(sum)
 
 
-def test(str):
-    sum = 0
-    for line in str.split('\n'):
-        id, game = line.split(': ')
-        sum += check_game(game)
-    print(sum)
+def part2():
+    with open(INPUT, 'r') as file:
+        sum = 0
+        for line in file:
+            id_str, game_str = line.split(': ')
+            game = _parse_game(game_str)
+            sum += _part2(game)
+        print(sum)
 
-        
+
 if __name__ == "__main__":
-    main()
+    part1()
+    part2()
